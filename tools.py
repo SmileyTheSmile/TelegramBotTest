@@ -35,7 +35,6 @@ def static_mapper(data, points = []):
         static_api_address = "http://static-maps.yandex.ru/1.x/?"
         static_api_params = "ll={}&spn={},{}&pt={}&l=map".format(ll, spn[0], spn[1], ll + points)
         address = static_api_address + static_api_params
-        print(address)
         return (address, ll)
     return ll
 
@@ -54,8 +53,12 @@ def lonlat_distance(a, b):
     return distance
 
 def convert_to_degrees(meters):
-    one_meter = 1 / 111000
-    return str(meters * one_meter)
+    try:
+        meters = int(meters)
+        one_meter = 1 / 111000
+        return str(meters * one_meter)
+    except Exception:
+        return 'err6'
 
 def get_organisation(coords, spn):
     search_api_server = "https://search-maps.yandex.ru/v1/"
