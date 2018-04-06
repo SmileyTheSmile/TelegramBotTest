@@ -25,18 +25,19 @@ def geocoder(text):
     except Exception:
         return 'err2'   
 
-def static_mapper(data, points = []):
-    if data != 'err1' or 'err2':
+def static_mapper(data, lang, points = []):
+    if data != 'err1' and data != 'err2':
         ll = data[0]
         spn = data[1]
         if points != []:
+            points = [','.join(map(str, i["geometry"]["coordinates"])) for i in points]
             points = '~' + '~'.join(points)
         else: points = ''
         static_api_address = "http://static-maps.yandex.ru/1.x/?"
-        static_api_params = "ll={}&spn={},{}&pt={}&l=map".format(ll, spn[0], spn[1], ll + points)
+        static_api_params = "ll={}&spn={},{}&lang={}&pt={}&l=map".format(ll, spn[0], spn[1], lang, ll + points)
         address = static_api_address + static_api_params
         return (address, ll)
-    return ll
+    return data
 
 def lonlat_distance(a, b):
     degree_to_meters_factor = 111 * 1000
@@ -60,7 +61,7 @@ def convert_to_degrees(meters):
     except Exception:
         return 'err6'
 
-def get_organisation(coords, spn):
+def get_organisation(coords, spn, lang):
     search_api_server = "https://search-maps.yandex.ru/v1/"
     api_key = "3c4a592e-c4c0-4949-85d1-97291c87825c"
     
@@ -68,6 +69,7 @@ def get_organisation(coords, spn):
         "apikey": api_key,
         "lang": "ru_RU",
         "ll": coords,
+        "lang": lang,
         "type": "biz"
     }
     
@@ -78,7 +80,7 @@ def get_organisation(coords, spn):
     if len(json_response["features"]) != 0:
         points = []
         for i in json_response["features"]:
-            if lonlat_distance(i["geometry"]["coordinates"], list(map(float, coords.split(',')))) <= int(spn):
-                points.append(','.join(map(str, i["geometry"]["coordinates"])))
+            if lonlat_distance(i["geometry"]["coordinates"], list(map(float, coords.split(',')))) <= float(spn):
+                points.append(i)
         return points
     return "err5"
