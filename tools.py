@@ -53,6 +53,10 @@ def lonlat_distance(a, b):
     distance = math.sqrt(dx * dx + dy * dy)
     return distance
 
+def convert_to_degrees(meters):
+    one_meter = 1 / 111000
+    return str(meters * one_meter)
+
 def get_organisation(coords, spn):
     search_api_server = "https://search-maps.yandex.ru/v1/"
     api_key = "3c4a592e-c4c0-4949-85d1-97291c87825c"

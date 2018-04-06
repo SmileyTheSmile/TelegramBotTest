@@ -23,7 +23,7 @@ def beginning(bot, update, user_data, chat_data):
         update.message.reply_text("What do you want me to do?\n a)Find something according to it's address? (Reply with 'A' if yes.)\n b)Find something according to it's coordinates? Reply with 'B' if yes.", reply_markup=markup2en)
         return 2
     else:
-        update.message.reply_text("I was unable to process whatever you wrote there.Please try again.\n Я не понял что вы там написали. Пожалуйста попробуйте снова.", reply_markup=stop_markup)
+        update.message.reply_text("I was unable to process whatever you wrote there.Please try again.\n Я не понял что вы там написали. Пожалуйста попробуйте снова.", reply_markup=markup2ru)
         return 1
 
 def first_choice(bot, update, user_data, chat_data):
@@ -134,9 +134,10 @@ def second_choice(bot, update, user_data, chat_data):
 
 def organisations_finder(bot, update, user_data, chat_data):
     spn = update.message.text
+    degree_spn = convert_to_degrees(int(update.message.text))
     organisations = get_organisation(user_data['last_search'], spn)
     if organisations != 'err5':
-        url = static_mapper((user_data['last_search'], ('0.02', '0.02')), organisations)
+        url = static_mapper((user_data['last_search'], (degree_spn, degree_spn)), organisations)
         request = requests.get(url[0])
         if request.status_code == 200:
             if user_data['language'] == 'RU':
@@ -155,20 +156,20 @@ def organisations_finder(bot, update, user_data, chat_data):
             return 7
         else:
             if user_data['language'] == 'RU':
-                update.message.reply_text("Во время выполнения вашего запроса возникла ошибка. Пожалуйста попробуйте снова.")
+                update.message.reply_text("Во время выполнения вашего запроса возникла ошибка. Пожалуйста попробуйте снова.", reply_markup = markup2ru)
             elif user_data['language'] == 'EN':
-                update.message.reply_text("There was an error processing your request. Please try again.")
+                update.message.reply_text("There was an error processing your request. Please try again.", reply_markup = markup2en)
     else:
         if user_data['language'] == 'RU':
-            update.message.reply_text("Ничего не было найдено. Попробуйте поискать поближе к цивилизации.")
+            update.message.reply_text("Ничего не было найдено. Попробуйте поискать поближе к цивилизации.", reply_markup = markup2ru)
         elif user_data['language'] == 'EN':
-            update.message.reply_text("Nothing was found. Try searching somewhere closer to civilization.")
+            update.message.reply_text("Nothing was found. Try searching somewhere closer to civilization.", reply_markup = markup2en)
     return 6
     
 def third_choice(bot, update, user_data, chat_data):
     if user_data['language'] == 'RU':
         if update.message.text == "А" or update.message.text == 'а':
-            update.message.reply_text('Что вы желаете сделать?\n а) Найти какое - нибудь место по адресу? (Напишите "А" если да)\n б)Найти что находится по определённым координатам? (Напишите "Б" если да)', reply_markup=choice_keyboard2ru)
+            update.message.reply_text('Что вы желаете сделать?\n а) Найти какое - нибудь место по адресу? (Напишите "А" если да)\n б)Найти что находится по определённым координатам? (Напишите "Б" если да)', reply_markup=markup2ru)
             return 2
         elif update.message.text == "Б" or update.message.text == 'б':
             update.message.reply_text('Хорошо. Чтобы начать разговор занаво напишите команду /start.', reply_markup=ReplyKeyboardRemove())
@@ -178,7 +179,7 @@ def third_choice(bot, update, user_data, chat_data):
             return 5         
     elif user_data['language'] == 'EN':
         if update.message.text == "A" or update.message.text == 'a':
-            update.message.reply_text('What do you want to do?\n a)Find a place according to its address? (Reply with "A" if yes)\n b)Find something according to its coordinates? (Reply with "B" if yes)', reply_markup=choice_keyboard2en)
+            update.message.reply_text('What do you want to do?\n a)Find a place according to its address? (Reply with "A" if yes)\n b)Find something according to its coordinates? (Reply with "B" if yes)', reply_markup=markup2en)
             return 2
         elif update.message.text == "B" or update.message.text == 'b':
             update.message.reply_text("Alright. To start a new conversation use the command /start.", reply_markup=ReplyKeyboardRemove())
@@ -188,11 +189,11 @@ def third_choice(bot, update, user_data, chat_data):
             return 5      
 
 stop_keyboard = [['/start', '/stop']]
-choice_keyboard1 = [['RU', 'EN'], ['/stop']]
-choice_keyboard2ru = [['А', 'Б'], ['/stop']]
-choice_keyboard2en = [['A', 'B'], ['/stop']]
-choice_keyboard3ru = [['А', 'Б', 'В'], ['/stop']]
-choice_keyboard3en = [['A', 'B', 'C'], ['/stop']]
+choice_keyboard1 = [['RU', 'EN'], ['/stop', '/start']]
+choice_keyboard2ru = [['А', 'Б'], ['/stop', '/start']]
+choice_keyboard2en = [['A', 'B'], ['/stop', '/start']]
+choice_keyboard3ru = [['А', 'Б', 'В'], ['/stop', '/start']]
+choice_keyboard3en = [['A', 'B', 'C'], ['/stop', '/start']]
 stop_markup = ReplyKeyboardMarkup(stop_keyboard, one_time_keyboard=False)
 markup1 = ReplyKeyboardMarkup(choice_keyboard1, one_time_keyboard=False)
 markup2ru = ReplyKeyboardMarkup(choice_keyboard2ru, one_time_keyboard=False)
